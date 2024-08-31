@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { model } from "mongoose";
 
 const messageModel = new mongoose.Schema({
     
@@ -20,3 +20,5 @@ const messageModel = new mongoose.Schema({
     },
     
 }, {timestamps: true})
+
+export const Message = model("Message", messageModel)
