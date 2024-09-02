@@ -33,7 +33,7 @@ export const sendMessage = async(req,res) => {
         await gotConversation.save();
 
         return res.status(201).json({
-            message: "Message sent successfully."
+            newMessage
         })
 
     } catch (error) {
@@ -49,11 +49,8 @@ export const getMessage = async (req,res) => {
             participants: {$all : [senderId, receiverId]}
         }).populate("messages");
 
-        return res.status(201).json({
-            message: "Successfully got messages"
-        })
+    return res.status(200).json(conversation?.messages);
 
-        console.log(conversation)
     } catch (error) {
         console.log(error);
         return res.status(401).json({
