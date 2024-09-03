@@ -4,23 +4,30 @@ import { connectDB } from "./config/database.js";
 import userRoutes from "./routes/userRoutes.js"
 import cookieParser from "cookie-parser";
 import cors from "cors"
-import messageRoutes from "./routes/messageRoute.js"
+import {app,server} from "./socket/socket.js"
+import messageRoutes from "./routes/messageRoutes.js"
 
 dotenv.config({})
-const app = express();
-const PORT = process.env.PORT || 8000;
-connectDB();
 
+const PORT = process.env.PORT || 5000;
 
-app.use(express.json());
+// middleware
+app.use(express.urlencoded({extended:true}));
+app.use(express.json()); 
 app.use(cookieParser());
-app.use(cors({
-    origin: 'http://localhost:5173',
-    credentials: true
-}))
-app.use("/api/v1/users", userRoutes)
-app.use("/api/v1/message", messageRoutes)
+const corsOption={
+    origin:'http://localhost:5173',
+    credentials:true
+};
+app.use(cors(corsOption)); 
+ 
 
-app.listen(PORT, () => {
-    console.log(`Server is listening on port ${PORT}`)
-})
+server.listen(PORT, ()=>{
+    connectDB();
+    console.log(`Server listen at port ${PORT}`);
+});
+
+
+// routes
+app.use("/api/v1/users",userRoutes); 
+app.use("/api/v1/message",messageRoutes);
