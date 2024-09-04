@@ -24,27 +24,35 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
-  // const [socket, setSocket] = useState(null);
+  
+  const {authUser} = useSelector(store=>store.user);
+  const {socket} = useSelector(store=>store.socket);
   const dispatch = useDispatch();
-  const { authUser } = useSelector(store => store.user);
 
-  useEffect(() => {
-    if (authUser) {
-      const socket = io('http://localhost:8000',{
-        query: {
-          userId: authUser._id
-        }
+  useEffect(()=>{
+    if(authUser){
+      const socketio = io(`${import.meta.env.VITE_BASE_URL}`, {
+          query:{
+            userId:authUser._id
+          }
       });
-      dispatch(setSocket(socket));
+      dispatch(setSocket(socketio));
 
-      socket.on('getOnlineUsers', (onlineUsers) => {
+      socketio?.on('getOnlineUsers', (onlineUsers)=>{
         dispatch(setOnlineUsers(onlineUsers))
-      })
-      
-      
-      return () => newSocket.close();  // Cleanup the socket connection
+      });
+      return () => socketio.close();
+    }else{
+      if(socket){
+        socket.close();
+        dispatch(setSocket(null));
+      }
     }
-  }, [authUser]);
+
+  },[authUser]);
+
+
+ 
 
   return (
     <div className='p-4 h-screen flex items-center justify-center'>
